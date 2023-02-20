@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: 2010-09-09
+#----------------------------------------------
+Resources:
+  SageMakerExecuteRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - sagemaker.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+        - arn:aws:iam::aws:policy/AmazonSageMakerCanvasFullAccess
+      Policies:
+        - PolicyName: "GrantS3Access"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub "arn:aws:s3:::sagemaker-${AWS::Region}-${AWS::AccountId}"
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub "arn:aws:s3:::sagemaker-${AWS::Region}-${AWS::AccountId}/*"
+  SageMakerBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "sagemaker-${AWS::Region}-${AWS::AccountId}"
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+#----------------------------------------------
+Outputs:
+  RoleArn:
+    Value: !GetAtt SageMakerExecuteRole.Arn
+  BucketArn:
+    Value: !GetAtt SageMakerBucket.Arn
+  BucketName:
+    Value: !Ref SageMakerBucket
