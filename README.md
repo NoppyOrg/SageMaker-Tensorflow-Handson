@@ -67,30 +67,50 @@ export ExecuteRoleArn BucketName
 #設定確認
 env | grep -e ExecuteRoleArn -e BucketName
 ```
-### トレーニングデータの確認
-トレーニングデータは、SageMakerがS3で公開しているMNISTデータをサンプルとして利用しています。
-東京リージョンの対象バケットのパス(東京リージョンの場合)
-- https://sagemaker-sample-data-ap-northeast-1.s3-ap-northeast-1.amazonaws.com/tensorflow/mnist/
-    - トレーニング用データ
-        - [train_data.npy](https://sagemaker-sample-data-ap-northeast-1.s3-ap-northeast-1.amazonaws.com/tensorflow/mnist/train_data.npy)
-        - [train_labels.npy](https://sagemaker-sample-data-ap-northeast-1.s3-ap-northeast-1.amazonaws.com/tensorflow/mnist/train_labels.npy)
-    - テスト用データ
-        - [eval_data.npy](https://sagemaker-sample-data-ap-northeast-1.s3-ap-northeast-1.amazonaws.com/tensorflow/mnist/eval_data.npy)
-        - [eval_labels.npy](https://sagemaker-sample-data-ap-northeast-1.s3-ap-northeast-1.amazonaws.com/tensorflow/mnist/eval_labels.npy)
-## Step2: トレーニングの実行
+### (オプション)トレーニングデータの確認
+デモ用のトレーニングデータとして、SageMakerがデモ用にS3にてPublicで提供しているMNISTデータベースを利用します。
+
+```sh
+#東京リージョンの対象バケットのパス(東京リージョンの場合)
+aws s3 ls s3://sagemaker-sample-data-ap-northeast-1/tensorflow/mnist/
+2019-01-25 08:31:41   31360128 eval_data.npy
+2019-01-25 08:31:41      40128 eval_labels.npy
+2019-01-25 08:31:41  172480128 train_data.npy
+2019-01-25 08:31:41     220128 train_labels.npy
 ```
-
-
-
-
-
-
-
-
-
-
-
-### トレーニングの実行
+## Step2: トレーニングの実行とトレーニング済みモデルの保存保存
+### トレーニングの実行とモデル保存
 ```sh
 python3 src/training_and_save.py
+```
+### トレーニング結果データの確認
+```sh
+JOB_NAME="<training_and_save.py実行最後に出力されたJob Name>"
+export JOB_NAME
+aws --profile ${PROFILE} s3 ls "s3://${BucketName}/${JOB_NAME}/"
+```
+### トレーニング済みモデル格納先S3のuriの環境変数設定
+次の推論の準備として、トレーニング済みモデルの格納先のs3を環境変数に設定します。
+```sh
+MODEL_S3_URI="s3://${BucketName}/${JOB_NAME}/output/model.tar.gz"
+export MODEL_S3_URI
+
+#データの確認
+aws --profile ${PROFILE} s3 ls ${MODEL_S3_URI}
+```
+## Step3: 推論の実行
+### 推論用のデータをローカルに取得
+```sh
+mkdir inference
+cd inference
+```
+```sh
+aws --profile ${PROFILE} s3 \
+    cp s3://sagemaker-sample-data-ap-northeast-1/tensorflow/mnist/train_data.npy train_data.npy
+aws --profile ${PROFILE} s3 \
+    cp s3://sagemaker-sample-data-ap-northeast-1/tensorflow/mnist/train_labels.npy train_labels.npy
+```
+### 実行
+```sh
+python3 ../src/deploy_model_and_invoke.py
 ```
