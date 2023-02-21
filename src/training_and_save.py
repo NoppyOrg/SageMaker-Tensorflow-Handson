@@ -53,10 +53,19 @@ mnist_estimator2 = TensorFlow(
     sagemaker_session=sagemaker_session,
 )
 
+
 # トレーニングの実行
 mnist_estimator2.fit(training_data_uri)
 
+
+# 推論エンドポイントの作成
+predictor2 = mnist_estimator2.deploy(
+    initial_instance_count=1, instance_type='ml.m4.xlarge')
+
+
 # ジョブ結果
 # https://docs.aws.amazon.com/ja_jp/sagemaker/latest/dg/debugger-estimator-classmethods.html
+print("\n")
 print("Job Name  = {}".format(mnist_estimator2.latest_training_job.job_name))
 print("Output S3 = {}".format(mnist_estimator2.output_path))
+print("Endpoint Name = {}".format(predictor2.endpoint_name))
