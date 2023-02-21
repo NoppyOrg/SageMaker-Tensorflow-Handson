@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 sagemaker-hans-on/
+inference/
