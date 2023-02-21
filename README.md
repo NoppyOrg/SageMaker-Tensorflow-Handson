@@ -1,6 +1,6 @@
 # SageMaker-Tensorflow-Hans-on
 ## ハンズオン構成
-![architecture](architecture.svg)
+![architecture](documents/architecture.svg)
 
 - 概要
     - 手元のPC(mac/linuxを想定)にてPythonスクリプトを使用して、MNISTデータセットの分類モデルをトレーニングし、その後に推論を実行します。

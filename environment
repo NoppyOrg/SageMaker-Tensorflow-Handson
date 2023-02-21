@@ -1,0 +1,5 @@
+PROFILE=sagemaker-poc-profile
+export PROFILE
+ExecuteRoleArn=arn:aws:iam::017094810799:role/SageMakerPoC-SageMakerExecuteRole-1CXV2KBCJBON6
+BucketName=sagemaker-ap-northeast-1-017094810799
+export ExecuteRoleArn BucketName
