@@ -40,6 +40,7 @@ aws --profile ${PROFILE} sts get-caller-identity
 }
 ```
 ### SageMaker用の実行ロールとS3バケットの作成
+![architecture](documents/step1-1.svg)
 ```sh
 aws --profile ${PROFILE} cloudformation deploy \
     --stack-name SageMakerPoC \
@@ -79,6 +80,7 @@ export ExecuteRoleArn BucketName
 env | grep -e ExecuteRoleArn -e BucketName
 ```
 ### (オプション)トレーニングデータの確認
+![architecture](documents/step1-2.svg)
 デモ用のトレーニングデータとして、SageMakerがデモ用にS3にてPublicで提供しているMNISTデータベースを利用します。
 
 ```sh
@@ -91,6 +93,7 @@ aws s3 ls s3://sagemaker-sample-data-ap-northeast-1/tensorflow/mnist/
 ```
 ## Step2: トレーニングの実行と推論エンドポイントの作成
 ### トレーニングの実行/モデル保存/推論エンドポイント作成
+![architecture](documents/step2-1.svg)
 ```sh
 python3 src/training_and_save.py
 ```
@@ -109,6 +112,7 @@ aws --profile ${PROFILE} sagemaker describe-endpoint --endpoint-name ${ENDPOINT_
 ```
 
 ## Step3: 推論の実行
+![architecture](documents/step3-1.svg)
 ### 推論用のデータをローカルに取得
 ```sh
 mkdir inference
